@@ -1,4 +1,4 @@
-"""Encodage / décodage de la trame de télémétrie (miroir de telemetry_frame.h)."""
+"""Encoding and decoding of the frame shared with telemetry_frame.h."""
 import struct
 
 PROTOCOL_VERSION = 1

@@ -1,6 +1,6 @@
-"""Lit le port série de la base, décode les trames et les enregistre en CSV (utile hors Unity)."""
+"""Record decoded frames from the base serial port as CSV."""
 import argparse, csv, time, serial
-from protocol import extract_frames, FIELDS
+from pc.python.telemetry.protocol import extract_frames, FIELDS
 
 ap = argparse.ArgumentParser()
 ap.add_argument("port"); ap.add_argument("--baud", type=int, default=115200)

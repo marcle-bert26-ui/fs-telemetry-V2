@@ -1,6 +1,6 @@
-import sys, os, unittest
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "pc", "tools"))
-from protocol import encode, decode, extract_frames, crc16_ccitt, FRAME_SIZE
+import unittest
+
+from pc.python.telemetry.protocol import encode, decode, extract_frames, crc16_ccitt, FRAME_SIZE
 
 # Vecteur de référence : à reprendre à l'identique dans les tests C et C# (voir docs/protocol.md)
 GOLDEN_FIELDS = dict(seq=1, t_ms=1000, rpm=8000, tps_d=500, map_dkpa=1000, lambda_m=1000,

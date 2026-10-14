@@ -1,2 +1,5 @@
+# Install the runtime dependencies before development tools.
+-r requirements.txt
+
+# Python test runner.
 pytest
-pyserial

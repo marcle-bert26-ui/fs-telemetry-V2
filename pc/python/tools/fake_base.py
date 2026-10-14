@@ -1,12 +1,12 @@
-"""Simule la station de base : génère des trames réalistes pour développer Unity sans hardware.
+"""Simule la station de base : génère des trames réalistes pour développer le dashboard sans hardware.
 
 Usage :
-  python pc/tools/fake_base.py --tcp 5555            # serveur TCP (Unity se connecte à 127.0.0.1:5555)
-  python pc/tools/fake_base.py --serial COM7         # envoie sur un port série (paire virtuelle com0com / socat)
+  python -m pc.python.tools.fake_base --tcp 5555     # serveur TCP (le dashboard se connecte à 127.0.0.1:5555)
+  python -m pc.python.tools.fake_base --serial COM7  # envoie sur un port série (paire virtuelle com0com / socat)
 Options : --hz 10  --drop 0.05 (taux de pertes simulé)  --corrupt 0.02 (trames corrompues)
 """
 import argparse, math, random, socket, time
-from protocol import encode
+from pc.python.telemetry.protocol import encode
 
 
 def sample(seq, t):

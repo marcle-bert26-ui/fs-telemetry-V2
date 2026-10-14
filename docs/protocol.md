@@ -32,10 +32,10 @@ Entrée : seq=1, t_ms=1000, rpm=8000, tps=50,0 %, MAP=100,0 kPa, λ=1,000, vbat=
 A55A0101E8030000401FF401E803E803640584035E01BC020200E5BF
 ```
 
-(Vérifié : sortie identique entre `telemetry_frame.h` compilé en C++ et `pc/tools/protocol.py`.)
+(Vérifié : sortie identique entre `telemetry_frame.h` compilé en C++ et `pc/python/telemetry/protocol.py`.)
 
 ## Règle d'évolution
-Modifier la trame = nouvelle `PROTOCOL_VERSION`, mise à jour de ce fichier, de `telemetry_frame.h`, `protocol.py`, `FrameParser.cs` et du vecteur de test, dans la même PR.
+Modifier la trame = nouvelle `PROTOCOL_VERSION`, mise à jour de ce fichier, de `telemetry_frame.h`, `pc/python/telemetry/protocol.py`, `FrameParser.cs` et du vecteur de test, dans la même PR.
 
 ## Côté ECU (CAN) : à compléter
 Les CAN ID, offsets et échelles du protocole *MaxxECU Default* sont à relever dans la doc officielle et à confirmer par sniffing du bus (issue « Identifier les CAN ID MaxxECU »). Rien n'est supposé dans le code tant que ce n'est pas validé (`can_map.h`).

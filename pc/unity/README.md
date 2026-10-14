@@ -18,4 +18,4 @@ SerialReader (thread)  ──bytes──►  FrameParser  ──TelemetryData─
 - `Assets/Scripts/FrameParser.cs` : fourni, aligné sur le protocole v1.
 - A écrire : `SerialReader.cs` (SerialPort ou TcpClient vers `fake_base.py`), `TelemetryStore.cs`, scènes UI.
 - Lecture série sur un **thread séparé**, transfert vers le thread principal via une file concurrente.
-- Développement sans hardware : `python pc/tools/fake_base.py --tcp 5555`.
+- Développement sans hardware : `python -m pc.python.tools.fake_base --tcp 5555`.

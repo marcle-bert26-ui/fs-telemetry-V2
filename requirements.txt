@@ -1,0 +1,8 @@
+# USB/serial connection to the telemetry base.
+pyserial>=3.5
+
+# Desktop user interface.
+PyQt5>=5.15.9
+
+# Live charts and numeric plotting support.
+pyqtgraph>=0.13.0
