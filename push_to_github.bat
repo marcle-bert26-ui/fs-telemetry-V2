@@ -114,8 +114,23 @@ if exist "tests" set "PYPROJ=1"
 if exist "test" set "PYPROJ=1"
 if defined PYPROJ if "%TESTED%"=="0" (
     echo Projet Python detecte : pytest
+    python -m pytest --version >nul 2>&1
+    if errorlevel 1 (
+        echo pytest n'est pas installe : installation automatique...
+        python -m pip install pytest
+        if errorlevel 1 (
+            echo [ERREUR] Installation de pytest impossible.
+            goto :tests_failed
+        )
+        if exist "requirements.txt" python -m pip install -r requirements.txt
+    )
     python -m pytest -q
-    if errorlevel 1 goto :tests_failed
+    if errorlevel 6 goto :tests_failed
+    if errorlevel 5 (
+        echo [ATTENTION] Aucun test trouve dans le projet : on continue.
+    ) else (
+        if errorlevel 1 goto :tests_failed
+    )
     set "TESTED=1"
 )
 
@@ -180,13 +195,18 @@ REM ============================================
 :push
 echo.
 echo [3/4] Recuperation des changements distants...
-git pull --rebase
-if errorlevel 1 (
-    echo.
-    echo [ERREUR] Conflit lors de la synchro avec GitHub.
-    echo Resous les conflits, puis lance : git rebase --continue
-    echo ^(ou annule avec : git rebase --abort^)
-    goto :fail
+git ls-remote --exit-code --heads origin !BRANCH! >nul 2>&1
+if not errorlevel 1 (
+    git pull --rebase origin !BRANCH!
+    if errorlevel 1 (
+        echo.
+        echo [ERREUR] La synchro avec GitHub a echoue ^(conflit possible^).
+        echo Resous les conflits, puis lance : git rebase --continue
+        echo ^(ou annule avec : git rebase --abort^)
+        goto :fail
+    )
+) else (
+    echo Branche distante absente : premier envoi.
 )
 
 REM ============================================
