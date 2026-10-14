@@ -7,6 +7,7 @@
 __pycache__/
 *.pyc
 .venv/
+.pytest_cache/
 # Unity
 pc/unity/[Ll]ibrary/
 pc/unity/[Tt]emp/

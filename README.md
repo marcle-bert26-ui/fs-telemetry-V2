@@ -24,11 +24,11 @@ MaxxECU ──CAN 500k──► [MCP2515] ► [Arduino Nano] ──SPI──► 
 
 ```bash
 git clone <url> && cd fs-telemetry
-pip install platformio pyserial
+pip install platformio -r requirements-dev.txt
 pio run -d firmware/car      # compile le firmware voiture
 pio run -d firmware/base     # compile le firmware base
 python pc/tools/fake_base.py --tcp 5555   # simule la base (sans hardware)
-python -m unittest discover tests
+python -m pytest tests
 ```
 
 Initialiser GitHub (labels, milestones, backlog) : voir `scripts/setup_github.sh`.

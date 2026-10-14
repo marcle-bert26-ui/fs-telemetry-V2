@@ -1,0 +1,28 @@
+M0 Setup	area:infra	Protéger la branche main	Activer branch protection : PR + 1 review + CI requise.
+M0 Setup	area:infra	Commander le matériel	Nano x2, MCP2515 (vérifier quartz), RFM95 868 MHz x2, antennes, level-shifters, buck 12V-5V, fusibles, TVS, connecteurs.
+M0 Setup	area:docs	Valider le règlement FS et la réglementation radio 868 MHz	Puissance max, duty cycle, règles télémétrie/LV de l'année.
+M1 CAN banc	area:car	Identifier les CAN ID MaxxECU	Relever IDs/offsets/échelles dans la doc MaxxECU Default 1.2/1.3 et confirmer par sniffing. Compléter can_map.h et docs/protocol.md.
+M1 CAN banc	area:hardware	Câbler et tester le MCP2515 sur banc	Vérifier quartz, CAN_MCP_CLOCK, réception en listen-only, sans perturber l'ECU.
+M1 CAN banc	area:car	Décoder RPM, TPS, MAP, lambda	Implémenter can_decode, comparer avec MTune (test T4).
+M1 CAN banc	area:car	Décoder températures, vbat, EGT	Idem, gérer valeurs absentes (INVALID_*).
+M2 Trame + radio	area:car	Gérer FLAG_CAN_TIMEOUT et ECU alive	Test T8.
+M2 Trame + radio	area:hardware	Level-shifter sur le SPI du module LoRa	Voir docs/hardware.md. Contrôle multimètre avant mise sous tension.
+M2 Trame + radio	area:car	Émission LoRa 10 Hz non bloquante	Test T5, mesurer le temps d'émission réel.
+M2 Trame + radio	area:base	Firmware base : réception, validation CRC, sortie USB	Purge des paquets de mauvaise taille.
+M2 Trame + radio	area:base	Trame de lien : RSSI/SNR et taux de pertes	Séparée de la trame de télémétrie.
+M3 PC + parseur	area:pc	Parseur C# + tests contre le vecteur de référence	Aligner FrameParser.cs avec docs/protocol.md.
+M3 PC + parseur	area:pc	Logger CSV série (serial_logger.py)	Horodatage PC, détection de pertes via seq.
+M3 PC + parseur	area:pc	Mesurer la latence bout en bout	Test T7.
+M4 Dashboard v1	area:unity	Initialiser le projet Unity (LTS, Personal)	Voir pc/unity/README.md. .NET Framework, Force Text.
+M4 Dashboard v1	area:unity	SerialReader thread + TelemetryStore	Support TCP pour fake_base.py et SerialPort pour la base réelle.
+M4 Dashboard v1	area:unity	Jauges RPM, TPS, températures, lambda, tension	Style lisible en plein soleil.
+M4 Dashboard v1	area:unity	Graphiques temps réel et historique	Fenêtre glissante configurable.
+M4 Dashboard v1	area:unity	Alertes et état du lien (données périmées, CAN timeout)	Test T12.
+M4 Dashboard v1	area:unity	Enregistrement et relecture de session	Export CSV compatible avec le logger Python.
+M5 Intégration voiture	area:hardware	Alimentation voiture : buck, fusible, TVS, ferrite	Test T9 (9-16 V, coupures, transitoires).
+M5 Intégration voiture	area:hardware	Montage mécanique et implantation de l'antenne	Antenne dégagée du carbone et du métal.
+M5 Intégration voiture	area:car	Activer et tester le watchdog	Reprise < 2 s après blocage.
+M5 Intégration voiture	area:test	Test de portée 100 m+ voiture montée	Test T6, noter RSSI/SNR.
+M6 Fiabilisation	area:hardware	Concevoir un PCB dédié ou migrer vers une carte intégrée	Remplacer l'assemblage de modules.
+M6 Fiabilisation	area:test	Essais vibrations, chaleur et endurance	Tests T10, T11.
+M6 Fiabilisation	area:docs	Documentation finale et release v1.0	Tag, firmware binaire, configuration, guide de montage.
