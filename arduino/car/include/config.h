@@ -12,6 +12,32 @@
 #define CAN_BITRATE    CAN_500KBPS
 #define CAN_TIMEOUT_MS 500        // sans trame ECU pendant ce délai => FLAG_CAN_TIMEOUT
 
+// ---- Sortie batterie MaxxECU (référence initiale, à calibrer sur le bus) ----
+#ifndef CAN_BATTERY_ENABLED
+#define CAN_BATTERY_ENABLED            1
+#endif
+#ifndef CAN_BATTERY_ID
+#define CAN_BATTERY_ID                 0x601UL
+#endif
+#ifndef CAN_BATTERY_EXTENDED
+#define CAN_BATTERY_EXTENDED           0
+#endif
+#ifndef CAN_BATTERY_BYTE_OFFSET
+#define CAN_BATTERY_BYTE_OFFSET        0
+#endif
+#ifndef CAN_BATTERY_BIG_ENDIAN
+#define CAN_BATTERY_BIG_ENDIAN         0
+#endif
+#ifndef CAN_BATTERY_SCALE_NUMERATOR
+#define CAN_BATTERY_SCALE_NUMERATOR    1UL
+#endif
+#ifndef CAN_BATTERY_SCALE_DENOMINATOR
+#define CAN_BATTERY_SCALE_DENOMINATOR  1UL
+#endif
+#ifndef CAN_BATTERY_OFFSET_CV
+#define CAN_BATTERY_OFFSET_CV          0L
+#endif
+
 // ---- Radio ----
 #define LORA_FREQ_HZ   868E6
 #define LORA_SF        7

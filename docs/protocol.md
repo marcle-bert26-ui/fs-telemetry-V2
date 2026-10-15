@@ -37,5 +37,27 @@ A55A0101E8030000401FF401E803E803640584035E01BC020200E5BF
 ## Règle d'évolution
 Modifier la trame = nouvelle `PROTOCOL_VERSION`, mise à jour de ce fichier, de `telemetry_frame.h`, `pc/python/telemetry/protocol.py`, `FrameParser.cs` et du vecteur de test, dans la même PR.
 
-## Côté ECU (CAN) : à compléter
-Les CAN ID, offsets et échelles du protocole *MaxxECU Default* sont à relever dans la doc officielle et à confirmer par sniffing du bus (issue « Identifier les CAN ID MaxxECU »). Rien n'est supposé dans le code tant que ce n'est pas validé (`can_map.h`).
+## Côté ECU (CAN) : tension batterie
+
+Le firmware voiture reprend la configuration de référence du document MaxxECU Sport fourni :
+
+| Paramètre | Valeur initiale |
+|---|---|
+| ID de sortie | `0x601`, standard |
+| Débit de sortie conseillé dans MTune | 10 Hz |
+| Valeur | `Battery voltage`, Data value 1 |
+| Position | octets 0-1 |
+| Type / endianness | unsigned 16 bits, little-endian |
+| Conversion vers `vbat_c` | valeur CAN × 1 / 1 + 0 centivolt |
+
+Ces paramètres sont regroupés au début de `arduino/car/include/config.h`. L'offset d'octet, le format standard/étendu, l'endianness, le ratio de conversion et l'offset centivolt peuvent être adaptés sans modifier le décodeur ni la trame PC/LoRa. La formule est :
+
+```
+vbat_c = raw × CAN_BATTERY_SCALE_NUMERATOR
+         / CAN_BATTERY_SCALE_DENOMINATOR
+         + CAN_BATTERY_OFFSET_CV
+```
+
+La valeur initiale suppose que la valeur brute est déjà en centivolts (ex. `1380` pour `13,80 V`). Le document MaxxECU précise que les réglages multiplicateur/diviseur/offset sont à calibrer : comparer la valeur reçue avec MTune, puis régler ces paramètres et/ou la formule de sortie dans MTune. Vérifier également dans MTune l'ID, le type standard, l'ordre little-endian et le contenu de Data value 1 avant utilisation réelle. La configuration logicielle n'est pas une validation sur véhicule.
+
+Une trame de longueur incorrecte, un ID/type différent, ou une valeur CAN `0xFFFF` est ignorée sans écraser la dernière mesure valide. La mesure reste dans `vbat_c` (centivolts), déjà affiché en volts dans le dashboard Python. Le reste du mapping MaxxECU reste volontairement non configuré.

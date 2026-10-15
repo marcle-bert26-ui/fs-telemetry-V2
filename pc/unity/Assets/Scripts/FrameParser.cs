@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FsTelemetry
 {
-    /// <summary>Trame décodée, en unités physiques. Miroir de firmware/common/telemetry_frame.h.</summary>
+    /// <summary>Trame décodée, en unités physiques. Miroir de arduino/common/telemetry_frame.h.</summary>
     public struct TelemetryData
     {
         public byte Seq;

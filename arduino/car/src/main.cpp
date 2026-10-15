@@ -20,8 +20,9 @@ static void pollCan() {
     uint8_t len;
     uint8_t buf[8];
     if (can.readMsgBuf(&id, &len, buf) != CAN_OK) return;
-    id &= 0x1FFFFFFFUL;  // retire les bits de flag (extended/RTR) de la lib
-    if (can_decode(id, buf, len, &frame)) lastCanMs = millis();
+    bool extended = (id & CAN_ID_EXTENDED_FLAG) != 0;
+    id &= CAN_ID_VALUE_MASK;  // retire les bits de flag (extended/RTR) de la lib
+    if (can_decode(id, extended, buf, len, &frame)) lastCanMs = millis();
   }
 }
 
