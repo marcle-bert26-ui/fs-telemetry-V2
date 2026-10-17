@@ -5,41 +5,6 @@ on:
   pull_request:
 
 jobs:
-  firmware:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        project: [arduino/car, arduino/base]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/cache@v4
-        with:
-          path: ~/.platformio
-          key: pio-${{ hashFiles('arduino/**/platformio.ini') }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - run: pip install platformio
-      - run: pio run -d ${{ matrix.project }}
-
-  arduino-can-map-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Test default battery mapping
-        run: |
-          g++ -std=c++11 -Wall -Wextra -Werror -I arduino/car/include -I arduino/common tests/arduino/test_can_map.cpp -o /tmp/test_can_map
-          /tmp/test_can_map
-      - name: Test configurable battery mapping
-        run: |
-          g++ -std=c++11 -Wall -Wextra -Werror -I arduino/car/include -I arduino/common \
-            -DCAN_BATTERY_ID=0x603UL -DCAN_BATTERY_EXTENDED=1 \
-            -DCAN_BATTERY_BYTE_OFFSET=2 -DCAN_BATTERY_BIG_ENDIAN=1 \
-            -DCAN_BATTERY_SCALE_NUMERATOR=2UL -DCAN_BATTERY_SCALE_DENOMINATOR=3UL \
-            -DCAN_BATTERY_OFFSET_CV=-100L \
-            tests/arduino/test_can_map.cpp -o /tmp/test_can_map_configured
-          /tmp/test_can_map_configured
-
   python-tests:
     runs-on: ubuntu-latest
     steps:

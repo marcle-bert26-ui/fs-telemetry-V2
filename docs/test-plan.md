@@ -4,10 +4,12 @@
 
 | ID | Test | Moyen | Critère |
 |---|---|---|---|
-| T1 | CRC / trame : C = Python = C# | CI + vecteur de test | identique |
-| T2 | Resynchronisation du flux | `tests/` + C# | trames valides retrouvées après bruit |
-| T12 | Dashboard Python | simulateur avec pertes/corruption | aucune exception, affichage « données périmées » |
-| T13 | Enregistrement / relecture CSV | session simulée | trames enregistrées puis relues sans perte de champs |
+| T1 | CRC, encodage et décodage de trame | `tests/protocol/` + vecteur de référence | CRC correct et valeurs aller-retour identiques |
+| T2 | Resynchronisation du flux | `tests/protocol/` | trames valides retrouvées après du bruit |
+| T12 | Dashboard Python | `tests/dashboard/` | valeurs et états affichés correctement |
+| T13 | Enregistrement / relecture CSV | `tests/dashboard/` | trames enregistrées puis relues sans perte de champs |
+
+La CI exécute uniquement ces tests logiciels. Elle ne compile pas et ne simule pas le firmware Arduino; la validation CAN et matérielle est effectuée séparément sur banc.
 
 ## Tests sur banc et véhicule
 

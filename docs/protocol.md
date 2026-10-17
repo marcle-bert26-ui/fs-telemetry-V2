@@ -1,7 +1,6 @@
-# Protocole de télémétrie v1
+# Protocole de télémétrie cible v1
 
-Liaison voiture → base : **1 trame binaire de 28 octets**, little-endian, envoyée à 10 Hz.
-La base la retransmet **telle quelle** sur l'USB série (115200 bauds). Le PC se re-synchronise sur `A5 5A` et recontrôle le CRC.
+La liaison prévue voiture → base utilise **1 trame binaire de 28 octets**, little-endian, envoyée à 10 Hz. La base la retransmet **telle quelle** sur l'USB série (115200 bauds). Le PC se re-synchronise sur `A5 5A` et recontrôle le CRC. Cette spécification est utilisée par le logiciel PC et son simulateur; le sketch Arduino actuel affiche du texte série et n'implémente pas encore ce transport.
 
 | Offset | Taille | Champ | Type | Unité / échelle |
 |---|---|---|---|---|
@@ -25,17 +24,17 @@ La base la retransmet **telle quelle** sur l'USB série (115200 bauds). Le PC se
 - **Pertes** : calculées côté PC via `seq` (saut de compteur).
 - **CRC** : poly `0x1021`, init `0xFFFF`, sans réflexion, xorout `0`. Contrôle : CRC("123456789") = `0x29B1`.
 
-## Vecteur de test (identique en C, Python et C#)
+## Vecteur de test
 Entrée : seq=1, t_ms=1000, rpm=8000, tps=50,0 %, MAP=100,0 kPa, λ=1,000, vbat=13,80 V, clt=90,0 °C, iat=35,0 °C, egt=700 °C, flags=2.
 
 ```
 A55A0101E8030000401FF401E803E803640584035E01BC020200E5BF
 ```
 
-(Vérifié : sortie identique entre `telemetry_frame.h` compilé en C++ et `pc/python/telemetry/protocol.py`.)
+Ce vecteur est vérifié par les tests Python du protocole. Le sketch Arduino voiture actuel lit les trames CAN `0x600` et `0x601` puis affiche les valeurs sur le port série; il ne produit pas encore cette trame binaire.
 
 ## Règle d'évolution
-Modifier la trame = nouvelle `PROTOCOL_VERSION`, mise à jour de ce fichier, de `telemetry_frame.h`, `pc/python/telemetry/protocol.py`, `FrameParser.cs` et du vecteur de test, dans la même PR.
+Modifier la trame = nouvelle `PROTOCOL_VERSION`, mise à jour de ce fichier, de `pc/python/telemetry/protocol.py`, des parseurs PC concernés et du vecteur de test, dans la même PR. Lorsqu'un transport binaire Arduino sera réintroduit, sa sérialisation et ses tests devront aussi être mis à jour.
 
 ## Côté ECU (CAN) : tension batterie
 
@@ -50,7 +49,7 @@ Le firmware voiture reprend la configuration de référence du document MaxxECU 
 | Type / endianness | unsigned 16 bits, little-endian |
 | Conversion vers `vbat_c` | valeur CAN × 1 / 1 + 0 centivolt |
 
-Ces paramètres sont regroupés au début de `arduino/car/include/config.h`. L'offset d'octet, le format standard/étendu, l'endianness, le ratio de conversion et l'offset centivolt peuvent être adaptés sans modifier le décodeur ni la trame PC/LoRa. La formule est :
+Le sketch Arduino voiture actuel lit `0x601` comme une trame little-endian et affiche ses quatre valeurs brutes; la conversion vers `vbat_c` et la transmission PC/LoRa décrites ci-dessus ne sont pas implémentées dans ce sketch. La formule de conversion prévue pour le protocole est :
 
 ```
 vbat_c = raw × CAN_BATTERY_SCALE_NUMERATOR
@@ -60,4 +59,4 @@ vbat_c = raw × CAN_BATTERY_SCALE_NUMERATOR
 
 La valeur initiale suppose que la valeur brute est déjà en centivolts (ex. `1380` pour `13,80 V`). Le document MaxxECU précise que les réglages multiplicateur/diviseur/offset sont à calibrer : comparer la valeur reçue avec MTune, puis régler ces paramètres et/ou la formule de sortie dans MTune. Vérifier également dans MTune l'ID, le type standard, l'ordre little-endian et le contenu de Data value 1 avant utilisation réelle. La configuration logicielle n'est pas une validation sur véhicule.
 
-Une trame de longueur incorrecte, un ID/type différent, ou une valeur CAN `0xFFFF` est ignorée sans écraser la dernière mesure valide. La mesure reste dans `vbat_c` (centivolts), déjà affiché en volts dans le dashboard Python. Le reste du mapping MaxxECU reste volontairement non configuré.
+La validation du décodage CAN et des valeurs reçues se fait sur matériel; elle n'est pas couverte par la suite CI logicielle.

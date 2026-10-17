@@ -11,16 +11,15 @@ MaxxECU ──CAN 500k──► [MCP2515] ► [Arduino Nano] ──SPI──► 
 
 | Section | Fichiers | Rôle |
 |---|---|---|
-| Arduino commun | `arduino/common/` | Définition de la trame partagée voiture/base |
-| Arduino voiture | `arduino/car/` | CAN → trame → radio (PlatformIO, Nano) |
-| Arduino base | `arduino/base/` | Radio → USB série (PlatformIO, Nano) |
+| Arduino voiture | `arduino/car/CAN/CAN.ino` | Lecture diagnostique CAN et affichage série sur Nano |
+| Arduino base | `arduino/base/` | Récepteur LoRa, à intégrer |
 | PC — Python | `pc/python/` | Application desktop et outils Python |
 | PC — Python / interface | `pc/python/ui/` | Fenêtre et composants graphiques PyQt5/pyqtgraph |
 | PC — Python / télémétrie | `pc/python/telemetry/` | Protocole binaire et enregistrement/relecture CSV |
 | PC — Python / outils | `pc/python/tools/` | Simulateur et journaliseur série |
 | PC — Python / identité visuelle | `pc/python/assets/` | Logo EIGSI Formula Student et licence de l’image |
 | PC — Unity | `pc/unity/` | Dashboard Unity prévu dans une prochaine étape |
-| Tests | `tests/arduino/`, `tests/dashboard/`, `tests/protocol/` | Tests organisés par composant |
+| Tests logiciels | `tests/dashboard/`, `tests/protocol/` | Tests Python du protocole, du dashboard et des sessions CSV |
 | Documentation | `docs/` | Architecture, hardware, protocole et plans |
 | Hardware et scripts | `hardware/`, `scripts/` | Schémas, BOM et automatisation GitHub |
 
@@ -28,19 +27,17 @@ MaxxECU ──CAN 500k──► [MCP2515] ► [Arduino Nano] ──SPI──► 
 
 ```bash
 git clone <url> && cd fs-telemetry
-pip install platformio -r requirements-dev.txt
-pio run -d arduino/car       # compile le programme voiture
-pio run -d arduino/base      # compile le programme base
+pip install -r requirements-dev.txt
 python -m pc.python.tools.fake_base --tcp 5555   # lance le simulateur (terminal 1)
 python -m pc.python.app                         # lance le dashboard PC Python (terminal 2)
 python -m pytest tests
 ```
 
-Le dashboard se connecte au port série de la base ou à un serveur TCP, affiche les mesures disponibles dans la trame, enregistre les sessions en CSV et permet de les relire. Pour installer uniquement le nécessaire à l’application (sans pytest ni PlatformIO), utilise `pip install -r requirements.txt`.
+Le sketch voiture actuel affiche les mesures CAN sur son port série; il ne transmet pas encore la trame binaire au dashboard. Le simulateur permet de tester indépendamment le dashboard Python, qui se connecte au port série ou à un serveur TCP, enregistre les sessions en CSV et permet de les relire. Pour installer uniquement le nécessaire à l’application (sans pytest), utilise `pip install -r requirements.txt`.
 
 Par défaut, les sessions CSV sont proposées dans `Documents/EIGSI Formula Student/Telemetry` (Windows : `Documents\EIGSI Formula Student\Telemetry`). Le bouton d’enregistrement permet de choisir un autre emplacement; « Ouvrir le dossier » ouvre le dossier par défaut.
 
-Les tests sont séparés par composant : `tests/arduino/` vérifie le décodage CAN avec la configuration par défaut et une configuration alternative; `tests/protocol/` couvre les trames et le CRC; `tests/dashboard/` couvre l’interface PC et les sessions CSV.
+La CI exécute les tests logiciels Python (`tests/protocol/` et `tests/dashboard/`). La validation du sketch Arduino et des mesures CAN se fait séparément sur le matériel; elle n'est pas simulée par cette suite.
 
 Initialiser GitHub (labels, milestones, backlog) : voir `scripts/setup_github.sh`.
 
